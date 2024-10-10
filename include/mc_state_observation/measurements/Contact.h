@@ -10,6 +10,9 @@ namespace mc_state_observation::measurements
  * Object making easier the handling of contacts within the observers.
  **/
 
+struct AdditionalInfo
+{
+};
 struct Contact
 {
 protected:
@@ -31,6 +34,10 @@ public:
   }
 
   inline unsigned id() const noexcept { return id_; }
+  inline AdditionalInfo & additionalInfo(std::string & observerName) noexcept
+  {
+    return additionalInfo_.at(observerName);
+  }
   inline const std::string & name() const noexcept { return name_; }
   inline bool isSet() const noexcept { return isSet_; }
   inline bool wasAlreadySet() const noexcept { return wasAlreadySet_; }
@@ -51,5 +58,7 @@ protected:
   bool isSet_ = false;
   bool wasAlreadySet_ = false;
   std::string surface_;
+  // map of information that would be necessary for a specific observer
+  std::unordered_map<std::string, AdditionalInfo> additionalInfo_;
 };
 } // namespace mc_state_observation::measurements
