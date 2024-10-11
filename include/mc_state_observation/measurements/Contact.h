@@ -10,21 +10,27 @@ namespace mc_state_observation::measurements
  * Object making easier the handling of contacts within the observers.
  **/
 
-struct AdditionalInfo
-{
-};
+
 struct Contact
 {
 protected:
+
   inline Contact() = default;
   // constructor if the contact is not associated to a surface
   inline Contact(unsigned id, std::string_view name) : id_(id), name_(name) {}
   // constructor if the contact is associated to a surface
-  inline Contact(unsigned id, std::string_view name, std::string_view surface) : Contact(id, name)
-  {
-    setSurface(surface);
-  }
-  inline bool operator<(const Contact & rhs) const noexcept { return (id() < rhs.id_); }
+  inline Contact(unsigned id, std::string_view name, std::string_view surface) : Contact(id, name){setSurface(surface);}
+
+  inline bool operator<(const Contact & rhs) const noexcept { return (id() <  rhs.id_); }
+
+  unsigned id_;
+  std::string name_;
+
+  bool isSet_ = false;
+  bool wasAlreadySet_ = false;
+  std::string surface_;
+    
+  shared_ptr<ContactInfo> info;
 
 public:
   virtual void resetContact() noexcept
@@ -34,10 +40,6 @@ public:
   }
 
   inline unsigned id() const noexcept { return id_; }
-  inline AdditionalInfo & additionalInfo(std::string & observerName) noexcept
-  {
-    return additionalInfo_.at(observerName);
-  }
   inline const std::string & name() const noexcept { return name_; }
   inline bool isSet() const noexcept { return isSet_; }
   inline bool wasAlreadySet() const noexcept { return wasAlreadySet_; }
@@ -51,14 +53,9 @@ public:
   inline void isSet(bool isSet) { isSet_ = isSet; }
   inline void wasAlreadySet(bool wasAlreadySet) { wasAlreadySet_ = wasAlreadySet; }
 
-protected:
-  unsigned id_;
-  std::string name_;
+    // TODO Add methods to get arg from Info !
+    void setInfo(const ContactInfo& info){this->info = info.copy()}
+    void getInfo() const {return *info}
 
-  bool isSet_ = false;
-  bool wasAlreadySet_ = false;
-  std::string surface_;
-  // map of information that would be necessary for a specific observer
-  std::unordered_map<std::string, AdditionalInfo> additionalInfo_;
 };
 } // namespace mc_state_observation::measurements
